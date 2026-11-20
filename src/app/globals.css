@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+/* Retro pixel desktop theme, taken from the "retro browser window interface elements" sheet. */
+@theme {
+  --color-ink: #4a2a2e;
+  --color-cream: #fbe3cd;
+  --color-paper: #fdf2e6;
+  --color-sky: #dbe4fb;
+  --color-mint: #67b9ad;
+  --color-tang: #ee8232;
+  --color-sun: #eac35b;
+  --color-cherry: #ef5d62;
+  --color-leaf: #7ed86f;
+  --color-peri: #7c9be9;
+  --color-bubble: #ff80b1;
+  --font-sans: "PlainDigits", var(--font-pixel), ui-monospace, "Courier New", monospace;
+}
+
+/* The pixel font's digits (2, 1, 7…) are hard to read, so digits everywhere come from a plain
+   monospace face already on the device; letters stay in the pixel font. */
+@font-face {
+  font-family: "PlainDigits";
+  src: local("Menlo"), local("Consolas"), local("DejaVu Sans Mono"), local("Liberation Mono"), local("Roboto Mono"), local("Courier New");
+  unicode-range: U+30-39;
+}
+@font-face {
+  font-family: "PlainDigits";
+  font-weight: 700;
+  src: local("Menlo Bold"), local("Consolas Bold"), local("DejaVu Sans Mono Bold"), local("Liberation Mono Bold"), local("Roboto Mono Bold"), local("Courier New Bold");
+  unicode-range: U+30-39;
+}
+
+html {
+  font-size: 17px;
+}
+
+/* Page titles are typed by teachers and often mix letters and digits ("test2"). Set whole in the
+   plain face so the digits stay readable without switching font mid-word. */
+h1 {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  letter-spacing: -0.02em;
+}
+
+body {
+  color: var(--color-ink);
+  background-color: var(--color-sky);
+  /* white graph-paper grid */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.75) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.75) 2px, transparent 2px);
+  background-size: 28px 28px;
+  letter-spacing: 0.02em;
+}
+
+@layer components {
+  .win {
+    background: var(--color-cream);
+    border: 2px solid var(--color-ink);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .win-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-bottom: 2px solid var(--color-ink);
+    background: var(--color-mint);
+    font-weight: 600;
+  }
+  .win-title[data-tone="tang"] { background: var(--color-tang); }
+  .win-title[data-tone="sun"] { background: var(--color-sun); }
+  .win-title[data-tone="cherry"] { background: var(--color-cherry); }
+  .win-title[data-tone="leaf"] { background: var(--color-leaf); }
+  .win-title[data-tone="peri"] { background: var(--color-peri); }
+  .win-title[data-tone="bubble"] { background: var(--color-bubble); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 5px;
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    /* dotted inner frame like the OK button */
+    outline: 2px dotted color-mix(in srgb, var(--color-ink) 55%, transparent);
+    outline-offset: -6px;
+    transition: transform 60ms, background-color 100ms;
+  }
+  .btn:hover { background: var(--color-paper); }
+  .btn:active { transform: translate(2px, 2px); }
+  .btn:focus-visible { outline: 2px solid var(--color-peri); outline-offset: 2px; }
+  .btn:disabled { opacity: 0.55; cursor: wait; }
+  .btn-sm { padding: 0.25rem 0.7rem; font-size: 0.9rem; outline-offset: -5px; }
+  .btn-primary { background: var(--color-mint); }
+  .btn-primary:hover { background: color-mix(in srgb, var(--color-mint) 80%, white); }
+  .btn-sun { background: var(--color-sun); }
+  .btn-sun:hover { background: color-mix(in srgb, var(--color-sun) 80%, white); }
+  .btn-danger { background: var(--color-cherry); }
+  .btn-danger:hover { background: color-mix(in srgb, var(--color-cherry) 80%, white); }
+
+  .field {
+    width: 100%;
+    padding: 0.45rem 0.7rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 5px;
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  .field::placeholder { color: color-mix(in srgb, var(--color-ink) 45%, transparent); }
+  .field:focus { outline: 3px solid var(--color-peri); outline-offset: 1px; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.05rem 0.6rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* segmented "Loading…" bar */
+  .meter {
+    height: 1.25rem;
+    padding: 2px;
+    border: 2px solid var(--color-ink);
+    border-radius: 5px;
+    background: var(--color-paper);
+  }
+  .meter > span {
+    display: block;
+    height: 100%;
+    background: repeating-linear-gradient(90deg, var(--color-peri) 0 11px, transparent 11px 14px);
+    transition: width 300ms steps(8);
+  }
+  .meter[data-full="true"] > span {
+    background: repeating-linear-gradient(90deg, var(--color-leaf) 0 11px, transparent 11px 14px);
+  }
+
+  /* transparent-pixel checkerboard, used for empty states */
+  .checker {
+    border: 2px solid var(--color-ink);
+    border-radius: 5px;
+    background-color: #fff;
+    background-image:
+      linear-gradient(45deg, #d9d2cc 25%, transparent 25%, transparent 75%, #d9d2cc 75%),
+      linear-gradient(45deg, #d9d2cc 25%, transparent 25%, transparent 75%, #d9d2cc 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+  }
+  .checker > * {
+    display: inline-block;
+    background: var(--color-cream);
+    border: 2px solid var(--color-ink);
+    border-radius: 5px;
+    padding: 0.35rem 0.8rem;
+  }
+
+  /* chunky octagon status chip */
+  .pix {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 6px;
+    background: var(--color-paper);
+    font-weight: 700;
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+  .pix[data-s="done"] { background: var(--color-leaf); }
+  .pix[data-s="stuck"] { background: var(--color-cherry); color: #fff; }
+}
+
+@layer components {
+  /* Join codes are read aloud and retyped, so they use a plain monospace face
+     where Z/2, S/5 and B/8 can't be confused, instead of the pixel font. */
+  .joincode,
+  .joincode-input {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-weight: 700;
+    font-size: 1.1em;
+    letter-spacing: 0.15em;
+  }
+  .joincode { user-select: all; }
+  .joincode-input { text-transform: uppercase; }
+  .joincode-input::placeholder {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+}
+
+@layer components {
+  /* Small numeric read-outs ("7h ago", "2/3"): the pixel font's 1 and 7 are hard to read at
+     this size, so these use the same plain monospace face as join codes. */
+  .num {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.85em;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+}
